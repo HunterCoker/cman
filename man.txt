@@ -1,0 +1,97 @@
+//-- general commands --//
+
+cman new                               # creates a new folder called "unnamed" ...
+cman new <project-name>                # creates a new folder called <project-name> in working directory and adds a CMakePresets.json and CMakeLists.txt file for the project
+cman new <project-name> ~/dev          # creates a new folder at "~/dev" called <project-name> and initializes a new cmake project
+
+cman undo                               # undoes the previous cman operation if possible
+
+cman status                             # 
+
+cman sync                               # updates internal representation of CMakePresets.json and CMakeLists.txt only if their timestamp has changed since last sync
+
+cman clean                              #
+cman clean --preset none-arm-eabi       #
+
+//-- preset commands --//
+
+cman preset list                                                    # lists all presets within the project
+
+cman preset info none-arm-eabi                                      # displays a human-readable description of the "none-arm-eabi" preset based on its json representation
+
+cman preset add none-arm-eabi                                       # adds a debug and release configuration preset starting with "none-arm-eabi"
+cman preset add none-arm-eabi --inherits base-preset                # adds a debug and release configuration preset starting with "none-arm-eabi" using "base-preset" as a base
+cman preset add none-arm-eabi --one-config                          # adds a preset called "none-arm-eabi" without dedicated debug or release configuration presets
+
+cman preset rm none-arm-eabi                                        # removes all presets matching expression ^none-arm-eabi(-debug|-release)?$
+
+cman preset rename arm-eabi none-arm-eabi                           # replaces "arm-eabi" with "none-arm-eabi" in all presets matching expression ^none-arm-eabi(-debug|-release)?$
+
+cman preset config none-arm-eabi --binary-dir build                 # sets the output directory of the binary for the "none-arm-eabi" preset
+cman preset config none-arm-eabi --generator Ninja                  # sets the build generator for the "none-arm-eabi" preset
+cman preset config none-arm-eabi --set BUILD_SHARED_LIBS=OFF        # sets the "BUILD_SHARED_LIBS" cache variable to "OFF" for the "none-arm-eabi" preset
+cman preset config none-arm-eabi --toolchain-file toolchain.cmake   # sets the toolchain file of the "none-arm-eabi"
+cman preset config none-arm-eabi --inherits base-preset             # sets the unset preset configuration options of "none-arm-eabi" to the set configuration options of "base-preset"
+cman preset config none-arm-eabi --hidden true                      # hides "none-arm-eabi" preset from tools/IDE dropdowns
+
+//-- global project setters --//
+
+cman config --libs-dir vendor               # sets the directory where project dependencies get installed to
+cman config --set BUILD_SHARED_LIBS=OFF     # sets default value of "BUILD_SHARED_LIBS" to "OFF" in CMakeLists.txt
+
+//-- source commands --/
+
+cman source add src/main.cpp
+cman source add src/*.cpp src/*hpp
+
+cman source rm src/main.cpp
+cman source rm src/*.cpp
+
+* add without warning:
+    C++ source:             *.cpp *.cc *.cxx *.C
+    C source:               *.c
+    C++ module interface:   *.mpp *.cppm
+    C++ module partition:   *.ixx *.mxx
+
+* warn if adding:
+    header:                 *.h *.hpp *.hh *.hxx *.H
+    inline impl:            *.inl
+    template impl:          *.tpp
+    other:                  *.txt *.md *.cmake
+
+//-- package commands --//
+
+cman package list
+
+cman package info glfw                          # describes package and lists versions/installation methods
+
+cman package add glfw                           # adds latest version of glfw to project using conan
+cman package add glfw --method submodule        # adds latest version of glfw to project as a git submodule if possible
+cman package add glfw --version 3.4             # adds specifically glfw version 3.4 to project
+cman package add gtest --preset test            # adds latest version of gtest to project using conan; gtest is only built/linked for "test" preset
+
+cman package rm glfw                            # removes glfw from project; removal method depends on method used to add package (i.e., submodule method requires )
+cman package rm gtest --preset release          # gtest physically remains in project, but does not get built/linked for "release" preset
+
+//-- build commands --//
+
+cman build                                  # builds using the default debug preset
+cman build release                          # builds using the default release preset
+cman build --preset none-arm-eabi           # builds using the debug preset of the "none-arm-eabi" if it exists, otherwise builds using the preset named "none-arm-eabi"
+cman build release --preset none-arm-eabi   # builds using the debug preset of the "none-arm-eabi" preset
+
+* warn user if chosen build preset doesn't define certain cache variables used in the CMakeLists.txt file
+
+//-- run commands --//
+
+cman run                                    # executes the binary outputted by building the default "debug" preset
+cman run release                            # executes the binary outputted by building the default "release" preset
+cman run --preset none-arm-eabi             # 
+cman run release --preset none-arm-eabi     # executes the binary outputted by building the release version of the "none-arm-eabi" preset
+
+//-- test commands --//
+
+cman test
+cman test add math --framework gtest
+cman test rm math
+cman test --preset none-arm-eabi

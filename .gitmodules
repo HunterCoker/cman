@@ -1,0 +1,12 @@
+[submodule "libs/CLI11"]
+	path = libs/CLI11
+	url = https://github.com/CLIUtils/CLI11.git
+[submodule "libs/spdlog"]
+	path = libs/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "libs/inja"]
+	path = libs/inja
+	url = https://github.com/pantor/inja.git
+[submodule "libs/tree-sitter"]
+	path = libs/tree-sitter
+	url = https://github.com/tree-sitter/tree-sitter.git

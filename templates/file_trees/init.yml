@@ -1,0 +1,7 @@
+root: project_name
+structure:
+    - file: cmakelists_root.txt.tpl
+    - file: cmakepresets.json.tpl
+    - folder: src
+      structure:
+        - file: main.cpp.tpl

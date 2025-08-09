@@ -1,0 +1,6 @@
+.cman will contain the following
+    - the "working template" of each level CMakeLists.txt file
+        - useful for:
+            - renaming project/variables easily
+            - static analysis
+    - 

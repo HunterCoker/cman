@@ -1,0 +1,22 @@
+set(CLI11_WARNINGS_AS_ERRORS  OFF)
+set(CLI11_SINGLE_FILE         OFF)
+set(CLI11_PRECOMPILED         ON )
+set(CLI11_SANITIZERS          OFF)
+set(CLI11_BUILD_DOCS          OFF)
+set(CLI11_BUILD_TESTS         OFF)
+set(CLI11_BUILD_EXAMPLES      OFF)
+set(CLI11_BUILD_EXAMPLES_JSON OFF)
+set(CLI11_SINGLE_FILE_TESTS   OFF)
+set(CLI11_INSTALL             OFF)
+set(CLI11_FORCE_LIBCXX        OFF)
+set(CLI11_CUDA_TESTS          OFF)
+add_subdirectory(CLI11)
+
+add_subdirectory(spdlog)
+
+set(INJA_INSTALL     OFF)
+set(INJA_BUILD_TESTS OFF)
+add_subdirectory(inja)
+
+add_subdirectory(tree_sitter_cmake)
+add_subdirectory(tree-sitter/lib)

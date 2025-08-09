@@ -1,0 +1,165 @@
+////////////////////////////////////////////////////////////////////////////////
+** creating and running simple project executable **
+cman init hello_world
+cd hello_world
+
+main.cpp:
+#include <iostream>
+int main()
+{
+    std::cout << "Hello, World!" << std::endl;
+}
+
+cman run
+
+////////////////////////////////////////////////////////////////////////////////
+** creating and running simple, multi-file project executable **
+cman init hello_world
+cd hello_world
+
+hello.h:
+#pragma once
+void helloWorld();
+
+hello.cpp
+#include "hello.h"
+helloWorld()
+{
+    std::cout << "Hello, World!" << std::endl;
+}
+
+main.cpp:
+#include "hello.h"
+int main()
+{
+    helloWorld();
+}
+
+cman add hello.cpp
+cman run
+
+////////////////////////////////////////////////////////////////////////////////
+** creating and running project with dependencies **
+cman init hello_window
+cd hello_window
+cman package add glfw --method submodule
+cman link hello_window glfw
+
+main.cpp:
+#include <GLFW/glfw3.h>
+#include <iostream>
+int main()
+{
+    glfwInit();
+    std::cout << "Hello, World!" << std::endl;
+    glfwTerminate();
+}
+
+cman run
+
+////////////////////////////////////////////////////////////////////////////////
+** creating an executable and static/dynamic library for it to link to **
+cman init calculator
+cd calculator
+cman lib add linalg
+cman link calculator linalg     # default linkage is --static unless specified --dynamic
+
+libs/linalg/include/linalg/linalg.hpp:
+struct vec3;
+vec3 operator+(const vec3& v1, const vec3& v2);
+
+libs/linalg/src/linalg.cpp
+#include "linalg.h"
+struct vec3
+{
+    union
+    {
+        struct { float x, y, z; }
+        struct { float r, g, b; }
+    }
+}
+vec3 operator+(const vec3& v1, const vec3& v2) { return { v1.x+v2.x, v1.y+v2.y, v1.x+v2.z }; }
+
+main.cpp:
+#include <linalg.hpp>
+int main()
+{
+    vec3 v1 = { 1.0f, 2.0f, 3.0f };
+    vec3 v2 = { 4.0f, 5.0f, 6.0f };
+    vec3 v3 = v1 + v2;
+}
+
+cman run
+
+////////////////////////////////////////////////////////////////////////////////
+** creating and building new embedded project with toolchain **
+
+cman init stm32_blink
+cd stm32_blink
+cman target rename stm32_blink blink
+cman target set-toolchain blink none-arm-eabi
+
+stm32-proj/
+|- .cman/
+|  |- ...
+|- .gitignore
+|- CMakeLists.txt
+|- CMakePresets.json
+|- cmake/
+|  |- toolchain.cmake
+|- src/
+|  |- CMakeLists.txt
+|  |- main.cpp
+
+cman lib add uart --toolchain none-arm-eabi
+
+stm32-proj/
+|- .cman/
+|  |- ...
+|- .gitignore
+|- CMakeLists.txt
+|- CMakePresets.json
+|- cmake/
+|  |- toolchain.cmake
+|- libs/
+|  |- CMakeLists.txt
+|  |- uart/
+|  |  |- CMakeLists.txt
+|  |  |- include/
+|  |  |  |- uart/
+|  |  |  |  |- uart.hpp
+|  |  |- src/
+|  |  |  |- CMakeLists.txt
+|  |  |  |- uart.cpp
+|- src/
+|  |- CMakeLists.txt
+|  |- main.cpp
+
+cman link blink uart --static
+cman build
+
+////////////////////////////////////////////////////////////////////////////////
+** creating and building new library **
+
+cman init mylib --lib
+cd mylib
+
+or
+
+cman init mylib
+cd mylib
+cman target set-lib mylib
+
+stm32-proj/
+|- .cman/
+|  |- ...
+|- .gitignore
+|- CMakeLists.txt
+|- CMakePresets.json
+|- include/
+|  |- mylib.hpp
+|- src/
+|  |- CMakeLists.txt
+|  |- mylib.cpp
+
+cman build
